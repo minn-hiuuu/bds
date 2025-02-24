@@ -4,15 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bds.com</title>
+    <title>Huỳnh Tuấn - Trang Bất Động Sản</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
     <style>
-        /* Đảm bảo toàn bộ trang có chiều cao 100% */
         html,
         body {
             height: 100%;
@@ -25,9 +24,12 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Phần main sẽ chiếm toàn bộ không gian giữa header và footer */
         main {
             flex: 1;
+        }
+
+        footer {
+            margin-top: auto;
         }
 
         /* Hero Section */
@@ -50,6 +52,21 @@
             margin-bottom: 30px;
         }
 
+        .search-form input,
+        .search-form select {
+            max-width: 600px;
+        }
+
+        /* Property Types */
+        .property-types i {
+            color: white;
+        }
+
+        .property-types p {
+            color: white;
+            margin-top: 10px;
+        }
+
         /* Product Card */
         .product {
             border-radius: 10px;
@@ -60,6 +77,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            margin-bottom: 30px; /* Thêm khoảng cách giữa các sản phẩm */
         }
 
         .product img {
@@ -108,103 +126,123 @@
             color: #007bff;
             background-color: white;
         }
+
+        /* Phân cách giữa các sản phẩm */
+        .row > .col-md-4 {
+            margin-bottom: 30px; 
+        }
     </style>
 </head>
 
 <body>
-    @if (Route::has('login'))
-        <div class="p-1 bg-light text-end z-10">
-            @auth
-                @if (auth()->user()->role_id == 1)
-                    <!-- Admin Dashboard -->
-                    <a href="{{ url('/admin') }}" class="btn btn-primary text-decoration-none text-white">Admin
-                        Dashboard</a>
-                @else
-                    <!-- User Profile -->
-                    <a href="{{ url('/user/profile') }}" class="btn btn-primary text-decoration-none text-white">Profile</a>
-                @endif
 
-                <!-- Nút Logout -->
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-danger text-decoration-none text-white">Logout</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="btn btn-primary text-decoration-none text-white">Log in</a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="btn btn-success text-decoration-none text-white">Register</a>
-                @endif
-            @endauth
-        </div>
-    @endif
-
-    <!-- Navbar -->
     @include('client.navbar')
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Section với form tìm kiếm và danh mục bất động sản -->
+    <header class="hero-section">
         <div class="container">
-            <h1>Chào mừng đến với BDS.com</h1>
-            <p>Tìm kiếm và khám phá các bất động sản tốt nhất cho bạn.</p>
-            <form class="d-flex justify-content-center search-form">
-                <input class="form-control form-control-lg" type="search" placeholder="Tìm kiếm bất động sản"
-                    aria-label="Search">
+            <h1>CÁCH TIẾP CẬN BẤT ĐỘNG SẢN NHANH NHẤT</h1>
+            <p>Tìm kiếm nhanh chóng với các công cụ tìm kiếm thông minh.</p>
+            <form class="search-form d-flex justify-content-center flex-wrap" action="" method="GET">
+                <!-- Dropdown chọn danh mục, tự động submit khi chọn -->
+                <select name="type" class="form-select me-2 mb-2" style="max-width: 200px;" onchange="this.form.submit()">
+                    <option value="">Loại nhà đất</option>
+                    @foreach ($propertyTypes as $type)
+                        <option value="{{ $type->slug }}" @if(request('type')==$type->slug) selected @endif>
+                            {{ $type->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <input type="text" name="search" class="form-control me-2 mb-2" placeholder="Nhập địa điểm hoặc từ khóa ...">
+                <button type="submit" class="btn btn-primary me-2 mb-2">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
             </form>
-        </div>
-    </section>
-
-    <div class="container">
-        <!-- Property Types Section -->
-        <section class="row row-cols-1 row-cols-md-3 g-4 text-center mt-5">
-            @foreach ($propertyTypes as $type)
-                <div class="col">
-                    <div class="card p-3">
-                        <i class="{{ $type->icon }} fs-1 text-primary"></i> <!-- Hiển thị icon từ database -->
-                        <p>{{ $type->name }}</p>
-                    </div>
+            <!-- Hiển thị Icon các loại bất động sản -->
+            <div class="property-types mt-5">
+                <div class="row justify-content-center">
+                    @foreach ($propertyTypes as $type)
+                        <div class="col-6 col-md-2 text-center mb-3">
+                            <a href="?type={{ $type->slug }}" class="text-decoration-none">
+                                <i class="{{ $type->icon }} fa-2x"></i>
+                                <p>{{ $type->name }}</p>
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </section>
+            </div>
+        </div>
+    </header>
 
-        <!-- Product Section -->
-        <section class="container my-5">
-            <div class="row row-cols-1 row-cols-md-3 g-4">
+    <!-- Nội dung chính: Danh sách bất động sản -->
+    <main class="container my-5">
+        @php
+            // Lấy giá trị lọc theo loại nhà đất và từ khóa tìm kiếm từ URL (GET)
+            $selectedType = request('type') ?? '';
+            $searchKeyword = request('search') ?? '';
+
+            // Lọc theo loại bất động sản
+            if ($selectedType) {
+                $displayTitle = ucwords(str_replace('-', ' ', $selectedType));
+            }
+        @endphp
+
+        @if($selectedType)
+            <h2>Danh mục: <em>{{ $displayTitle }}</em></h2>
+        @elseif($searchKeyword)
+            <h2>Kết quả tìm kiếm: <em>{{ $searchKeyword }}</em></h2>
+        @else
+            <h2>Tất cả sản phẩm</h2>
+        @endif
+
+        <div class="row">
+            @if($properties->isNotEmpty())
                 @foreach ($properties as $property)
-                    <div class="col">
-                        <div class="product card">
-                            <!-- Lấy ảnh đầu tiên của bất động sản hoặc dùng ảnh mặc định -->
+                    <div class="col-lg-3 col-md-6 col-sm-12 g-4">
+                        <div class="product card property-card">
                             @php
-                                $imagePath = $property->images->isNotEmpty()
-                                    ? asset($property->images->first()->image_path)
-                                    : 'https://via.placeholder.com/300';
+                                // Lấy ảnh đầu tiên của bất động sản hoặc dùng ảnh mặc định
+                                $imagePath = $property->images->isNotEmpty() ? asset($property->images->first()->image_path) : 'https://via.placeholder.com/300';
                             @endphp
-                            <img src="{{ $imagePath }}" alt="{{ $property->title }}" class="img-fluid">
-
-                            <div class="badge hot">{{ ucfirst($property->status) }}</div>
+                            <img src="{{ $imagePath }}" alt="Image of {{ $property->title }}" class="img-fluid">
+                            <div class="badge bg-primary">
+                                {{ $property->badge ?? ucfirst($property->status) }}
+                            </div>
+                            @if(isset($property->badge) && ($property->badge == 'Cho bán' || $property->badge == 'Cho thuê'))
+                                <div class="badge hot">HOT</div>
+                            @endif
                             <div class="card-body">
-                                <h5 class="card-title">{{ $property->title }}</h5>
-                                <p class="card-text">{{ $property->description }}</p>
-                                <p class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ $property->location }}</p>
+                                <h5 class="card-title">{{ ucwords($property->title) }}</h5>  <!-- In hoa chữ cái đầu dòng -->
+                                <p class="card-text">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ ucwords($property->location) }}  <!-- In hoa chữ cái đầu dòng cho địa chỉ -->
+                                </p>
                             </div>
                             <div class="card-footer">
-                                <span class="price">${{ number_format($property->price, 2) }}</span>
-                                <a href="{{ url('/product-detail', ['id' => $property->id]) }}"
-                                    class="btn btn-primary">Chi tiết</a>
+                                <span class="price">{{ number_format($property->price, 0, ',', '.') }}</span>
+                                <a href="{{ url('/product-detail', ['id' => $property->id]) }}" class="btn btn-primary">Chi tiết</a>
                             </div>
                         </div>
                     </div>
                 @endforeach
+            @else
+                <div class="col-12">
+                    <p>Không có sản phẩm nào phù hợp với tìm kiếm của bạn.</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Phân trang -->
+        <div class="row">
+            <div class="col-12">
+                {{ $properties->links() }} <!-- Hiển thị phân trang -->
             </div>
-        </section>
+        </div>
+    </main>
 
-
-    </div>
-
-
-    <!-- Footer -->
     @include('client.footer')
 
-    <!-- Bootstrap JS & Popper -->
+    <!-- Bootstrap Bundle JS (bao gồm Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

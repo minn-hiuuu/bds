@@ -146,14 +146,15 @@
 
                         <!-- Thông tin cơ bản -->
                         <div class="col-lg-4 col-12 p-4">
-                            <h2 class="fw-bold">{{ $property->title }}</h2>
-                            <p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ $property->location }}</p>
+                            <h2 class="fw-bold">{{ ucwords($property->title) }}</h2>  <!-- Title in hoa ký tự đầu dòng -->
+                            <p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ ucwords($property->location) }}</p> <!-- Địa chỉ in hoa ký tự đầu dòng -->
                             <p><strong>Loại:</strong> {{ optional($property->propertyType)->name ?? 'Không xác định' }}</p>
                             <p><strong>Trạng thái:</strong> {{ ucfirst($property->status) }}</p>
                             <p class="h3 text-danger fw-bold">{{ number_format($property->price, 0, ',', '.') }} VND</p>
-                            <button class="btn btn-contact w-100 mt-3">
-                                <i class="fas fa-phone-alt"></i> 0123 456 789
-                            </button>
+                            <!-- Hiển thị số điện thoại từ bảng users -->
+                            <a href="tel:{{ optional($property->author)->phone }}" class="btn btn-contact w-100 mt-3">
+                                <i class="fas fa-phone-alt"></i> {{ optional($property->author)->phone ?? 'Chưa có số điện thoại' }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -163,7 +164,7 @@
                     <h4 class="text-primary">Tiện ích</h4>
                     <ul class="list-group">
                         @forelse($property->features as $feature)
-                            <li class="list-group-item">{{ $feature->feature }}</li>
+                            <li class="list-group-item">{{ ucwords($feature->feature) }}</li>  <!-- Tiện ích in hoa ký tự đầu dòng -->
                         @empty
                             <li class="list-group-item text-muted">Không có tiện ích nào.</li>
                         @endforelse
